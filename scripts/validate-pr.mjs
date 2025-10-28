@@ -175,4 +175,63 @@ async function gh(path, { ownerRepo = `${baseOwner}/${baseRepo}`, method = 'GET'
   }
 
   ok(`檢核通過：僅新增資料夾 ${folder}，命名正確、檔案合規且皆 ≤ 100 KB 🎉`);
+
+  // 8) 在 PR 上留言顯示檢核結果
+  await postPRComment({
+    folder,
+    fileCount: files.length,
+    datePart,
+    romanPart,
+    pngCount,
+    cssCount,
+    hasIndex
+  });
 })();
+
+async function postPRComment({ folder, fileCount, datePart, romanPart, pngCount, cssCount, hasIndex }) {
+  // 只在 PR 事件時留言
+  if (process.env.GITHUB_EVENT_NAME !== 'pull_request') {
+    console.log('ℹ️  非 PR 環境，跳過留言');
+    return;
+  }
+
+  const prNumber = pr?.number;
+  if (!prNumber) {
+    console.log('⚠️  無法取得 PR 編號，跳過留言');
+    return;
+  }
+
+  // 建立留言內容
+  const lines = [];
+  lines.push('## ✅ 簽到檢核通過！');
+  lines.push('');
+  lines.push('### 📋 檢核結果');
+  lines.push('');
+  lines.push('| 項目 | 結果 |');
+  lines.push('|------|------|');
+  lines.push(`| 資料夾名稱 | \`${folder}\` |`);
+  lines.push(`| 日期格式 | ${datePart} ✅ |`);
+  lines.push(`| 羅馬拼音 | ${romanPart} ✅ |`);
+  lines.push(`| 檔案數量 | ${fileCount} 個 |`);
+  lines.push(`| index.html | ${hasIndex ? '✅ 存在' : '❌ 缺少'} |`);
+  lines.push(`| PNG 圖片 | ${pngCount} 個 ${pngCount <= 1 ? '✅' : '❌'} |`);
+  lines.push(`| CSS 檔案 | ${cssCount} 個 ${cssCount <= 1 ? '✅' : '❌'} |`);
+  lines.push(`| 檔案大小 | 全部 ≤ 100 KB ✅ |`);
+  lines.push('');
+  lines.push('---');
+  lines.push('*🤖 自動檢核 by 六角學院 Vibe Coding Camp*');
+
+  const commentBody = lines.join('\n');
+
+  try {
+    await gh(`/issues/${prNumber}/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ body: commentBody })
+    });
+    console.log(`✅ 已在 PR #${prNumber} 留言`);
+  } catch (err) {
+    console.error('❌ 留言失敗:', err.message);
+    console.error('提示：請確認 GITHUB_TOKEN 權限包含 pull-requests: write');
+  }
+}
