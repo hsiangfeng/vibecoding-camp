@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>失敗示範 - 檔案過大</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>❌ 失敗示範：檔案超過 100 KB</h1>
+
+        <div class="warning">
+            <h2>⚠️ 違規內容</h2>
+            <p>此資料夾包含一個超過 100 KB 的圖片檔案 <code>people.png</code></p>
+        </div>
+
+        <div class="info">
+            <h2>📋 規則說明</h2>
+            <ul>
+                <li>✅ 資料夾命名：<code>2025-10-28-toolarge</code>（正確）</li>
+                <li>✅ 包含必要檔案：<code>index.html</code>（正確）</li>
+                <li>✅ 可選檔案數量：1 個 PNG + 1 個 CSS（正確）</li>
+                <li>❌ 檔案大小：<code>people.png</code> 超過 100 KB 限制（違規）</li>
+            </ul>
+        </div>
+
+        <div class="result">
+            <h2>🎯 預期結果</h2>
+            <p class="fail">CI 檢核失敗 ❌</p>
+            <p>錯誤訊息：<code>檔案過大：students/2025-10-28-toolarge/people.png (XXX bytes) 超過 100 KB 限制</code></p>
+        </div>
+
+        <div class="solution">
+            <h2>✅ 解決方法</h2>
+            <ol>
+                <li>使用線上壓縮工具（如 TinyPNG）壓縮圖片</li>
+                <li>調整圖片尺寸</li>
+                <li>使用更高的壓縮比</li>
+                <li>確保檔案 ≤ 100 KB（102,400 bytes）</li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
