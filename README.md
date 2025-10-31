@@ -151,26 +151,6 @@ students/
 - **GitHub Actions**：自動化 CI/CD 流程
 - **GitHub API**：取得 PR 檔案資訊、檔案大小、留言等
 
-### 檢核腳本說明
-
-[scripts/validate-pr.mjs](scripts/validate-pr.mjs) 主要流程：
-
-1. **讀取 PR 資訊**：從 `GITHUB_EVENT_PATH` 讀取 PR 事件資料
-2. **取得變更檔案**：透過 GitHub API 取得 PR 中所有變更的檔案
-3. **路徑與操作驗證**：
-   - 確認所有檔案都在 `students/` 目錄下
-   - 確認所有操作都是「新增」（`status === 'added'`）
-   - 確認路徑層級正確（`students/<folder>/<file>`）
-4. **資料夾驗證**：
-   - 確認只變更一個資料夾
-   - 驗證資料夾命名格式（日期 + 羅馬拼音）
-5. **檔案驗證**：
-   - 透過 GitHub API 取得每個檔案的 blob 資訊
-   - 檢查檔案大小（≤ 100 KB）
-   - 檢查檔案類型（僅允許 html、png、css）
-   - 檢查檔案數量（index.html 必須、png ≤ 1、css ≤ 1）
-6. **自動留言**：在 PR 上留言顯示檢核結果
-
 ### 檢核標準
 
 本專案採用**通過/失敗**制，而非評分制：
@@ -190,39 +170,6 @@ students/
 
 - ✅ 所有必要條件 + 可選條件（如果有）都通過 → CI 成功，可合併
 - ❌ 任一條件失敗 → CI 失敗，阻擋合併
-
-## 本機測試（選用）
-
-如果你想在本機先測試檢核腳本（雖然通常不需要）：
-
-### 前置準備
-
-1. **確認你有 Node.js**
-
-   ```bash
-   node --version
-   ```
-
-   如果沒有安裝，請到 [Node.js 官網](https://nodejs.org/) 下載安裝（建議使用 LTS 版本）
-
-2. **安裝相依套件**（本專案目前無外部相依）
-
-   ```bash
-   npm install
-   ```
-
-### 測試說明
-
-**注意**：`validate-pr.mjs` 腳本設計為在 GitHub Actions 環境中執行，需要以下環境變數：
-
-- `GITHUB_TOKEN`：GitHub API 認證 token
-- `GITHUB_EVENT_PATH`：PR 事件資料路徑
-
-因此，**不建議在本機執行此腳本**。你只需要：
-
-1. 按照規則建立資料夾和檔案
-2. 提交 PR
-3. 讓 GitHub Actions 自動檢核
 
 ## 常見問題 FAQ
 
